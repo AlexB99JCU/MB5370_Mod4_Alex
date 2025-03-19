@@ -1,1 +1,3 @@
 getwd()
+git config --global --edit
+git commit --amend --reset-author

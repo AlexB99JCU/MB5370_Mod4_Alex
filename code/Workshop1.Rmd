@@ -6,14 +6,23 @@ date: "2024-03-22"
 ---
 #TITLE1
 
+```{r}
+# install.packages("usethis")
+# usethis::use_github()
+```
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+# --------@
+# Module 4 - Data in R - Workshop 1
+# Alexander Barkley
+# 19-03-2025
+# --------@
 
 # Install and load tidyverse packages
 ```{r}
-## install.packages("tidyverse") # Delete this line once installed
+# install.packages("tidyverse") 
 library("tidyverse")
 ```
 
@@ -32,15 +41,15 @@ summary(mpg)
 ```
 
 
-# Create first plot
+# Creating my first ggplot
 ```{r}
 ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = disp, y = hwy))
+  geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
 The plot shows a negative relationship between engine size (displ) and fuel efficiency (hwy). In other words, cars with big engines use more fuel. What does this say about fuel efficiency and engine size?
 
-
+The plot shows a negative correlation between engine size (displ) and fuel efficiency (hwy), meaning larger engines consume more fuel and have lower highway MPG. This highlights the trade-off between power and efficiency—smaller engines are more fuel-efficient, while larger engines provide more power at the cost of fuel economy.
 
 # Understanding grammar of graphics
 What happens if we just try to run ggplot on its own?
@@ -136,7 +145,8 @@ ggplot(data = mpg) +
 Read ?facet_wrap. What does nrow do? What does ncol do? What other options control the layout of the individual panels? 
 
 ```{r}
-
+?facet_wrap
+ncol
 ```
 
 
@@ -144,7 +154,7 @@ Read ?facet_wrap. What does nrow do? What does ncol do? What other options contr
 We already used points:
 ```{r}
 ggplot(data = mpg) + 
-  geom_point(mapping = aes(x = displx, y = hwy))
+  geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
 
@@ -163,8 +173,8 @@ So let’s recap. A geom is an object that your plot uses to represent the data.
 ## Using comments (#)
 ```{r}
 ggplot(data = mpg) + 
-  #geom_point(mapping = aes(x = displ, y = hwy)) + # points horrible 
-  geom_smooth(mappings = aes(x = displ, y = hwy)) # try smooth line
+#  geom_point(mapping = aes(x = displ, y = hwy)) # points horrible 
+  geom_smooth(mapping = aes(x = displ, y = hwy)) # try smooth line
 ```
 
 Question: how does R work out where to plot the line??? Can use the chunk output to inform us. Can also use the help menu.
@@ -195,7 +205,7 @@ ggplot(data = mpg) +
 We already did this one way
 ```{r}
 ggplot(data = mpg) + 
-  geom_point(mapping = aes(xx = displ, y = hwy)) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
   geom_smooth(mapping = aes(x = displ, y = hwy))
 ```
 
@@ -368,6 +378,20 @@ ggplot(data = mpg) +
   #geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
+
+# Assignment
+```{r}
+
+```
+
+
+
+
+# --------@
+# Module 4 - Data in R - Workshop 2
+# Alexander Barkley
+# 20-03-2025
+# --------@
 
 
 
