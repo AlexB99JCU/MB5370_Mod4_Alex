@@ -383,6 +383,48 @@ ggplot(data = mpg) +
 ```{r}
 
 ```
+The graph is inverted because I labelled the y axis wrong
+
+# new fixed graph
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Loading the dataset 
+data <- read.csv('/Users/alexanderbarkley/Downloads/assignment 1 mod 4 dataset.csv', skip = 1)  # Skip first row
+
+# Rename columns for clarity
+colnames(data) <- c("Distance_Rainy", "Semivariance_Rainy", "Distance_Dry", "Semivariance_Dry")
+
+# Convertimg columns to numeric
+df <- data %>%
+  mutate(across(everything(), as.numeric))
+
+# Convert data to long format for ggplot**
+df_long <- bind_rows(
+  data.frame(Distance = df$Distance_Rainy, Semivariance = df$Semivariance_Rainy, Season = "Rainy"),
+  data.frame(Distance = df$Distance_Dry, Semivariance = df$Semivariance_Dry, Season = "Dry")
+) %>%
+  filter(!is.na(Distance) & !is.na(Semivariance)) %>%  # Remove missing values
+  arrange(Season, Distance)  # Ensure correct order for smooth lines
+
+# Create the plot
+ggplot(df_long, aes(x = Distance, y = Semivariance, color = Season)) +
+  geom_point(size = 2, alpha = 1) +  # Scatter points
+  geom_smooth(method = "loess", span = 0.5, se = FALSE) +  # Explicitly use LOESS, using non-parametric regression method used to smooth data trends in scatter plots 
+  theme_minimal() +
+  labs(title = "Fish species richness for rainy and dry seasons in 1993–1994",
+       x = "Distance (km)",
+       y = "Semivariance",
+       color = "Season") +  # Legend title
+  scale_color_manual(values = c("Rainy" = "lightblue", "Dry" = "lightcoral"))  
+
+```
+
+
+
+
 
 
 
