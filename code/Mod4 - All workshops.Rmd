@@ -1,10 +1,14 @@
 ---
 title: "MB5370 Module 04. Workshop 1 - Introduction"
-author: "Ben Cresswell"
+author: "Alexander Barkley"
 output: html_document
 date: "2024-03-22"
 ---
-#TITLE1
+# --------@
+# Module 4 - Data in R - Workshop 1
+# Alexander Barkley
+# 19-03-2025
+# --------@
 
 ```{r}
 # install.packages("usethis")
@@ -14,26 +18,21 @@ date: "2024-03-22"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# --------@
-# Module 4 - Data in R - Workshop 1
-# Alexander Barkley
-# 19-03-2025
-# --------@
 
-# Install and load tidyverse packages
+### Install and load tidyverse packages 
 ```{r}
 # install.packages("tidyverse") 
 library("tidyverse")
 ```
 
 
-# Load the data (mpg is built into ggplot2)
+### Load the data (mpg is built into ggplot2) 
 ```{r}
 data(mpg)
 ```
 
 
-# Quick data checks
+### Quick data checks 
 ```{r}
 head(mpg)
 glimpse(mpg)
@@ -41,7 +40,7 @@ summary(mpg)
 ```
 
 
-# Creating my first ggplot
+### Creating my first ggplot
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy))
@@ -51,30 +50,33 @@ The plot shows a negative relationship between engine size (displ) and fuel effi
 
 The plot shows a negative correlation between engine size (displ) and fuel efficiency (hwy), meaning larger engines consume more fuel and have lower highway MPG. This highlights the trade-off between power and efficiency—smaller engines are more fuel-efficient, while larger engines provide more power at the cost of fuel economy.
 
-# Understanding grammar of graphics
+### Understanding grammar of graphics 
 What happens if we just try to run ggplot on its own?
 ```{r}
 ggplot() 
-# Or with just the data specified?
+```
+
+### Or with just the data specified? 
+```{r}
 ggplot(data = mpg)
 ```
 
 We need to map some aesthetics!!
 
-# When you’re creating a plot, you essentially need two attributes of a plot: a geom and aesthetics.
+### When you’re creating a plot, you essentially need two attributes of a plot: a geom and aesthetics. 
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, colour = class))
 ```
 
 
-# Change point colour by class:
+### Change point colour by class:
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, colour = class))
 ```
 
-# Change point size by class:
+### Change point size by class:
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, size = class))
@@ -82,7 +84,7 @@ ggplot(data = mpg) +
 Note the warning!!!
 
 
-# Change transparency (alpha) by class
+### Change transparency (alpha) by class
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
@@ -90,30 +92,23 @@ ggplot(data = mpg) +
 Another warning!!
 Question: When would using alpha (or size be appropriate??)
 
-# Change point shape by class:
+### Change point shape by class:
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, shape = class))
 ```
 
 
-# Make all points blue
+### Make all points blue
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
 ```
 
 
-# Troubleshooting 
+### Faceting
 
-
-
-
-
-
-# Faceting
-
-## facet_wrap
+### facet_wrap
 Split the plot out by car type (class)
 ```{r}
 ggplot(data = mpg) + 
@@ -122,7 +117,7 @@ ggplot(data = mpg) +
 ```
 
 
-## facet_grid
+### facet_grid
 A separate facet for each combination of drive-type (e.g. 4WD) * number of cylinders
 ```{r}
 ggplot(data = mpg) + 
@@ -132,7 +127,7 @@ ggplot(data = mpg) +
 Note that there are no occurrences of 5 cylinder 4WDs OR RWD vehicles!
 
 
-## facet_grid by just row (or column)
+### facet_grid by just row (or column)
 ```{r}
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy)) + 
@@ -141,7 +136,7 @@ ggplot(data = mpg) +
 
 ```
 
-# Exercise:
+### Exercise:
 Read ?facet_wrap. What does nrow do? What does ncol do? What other options control the layout of the individual panels? 
 
 ```{r}
@@ -150,7 +145,7 @@ ncol
 ```
 
 
-# Lines
+### Lines
 We already used points:
 ```{r}
 ggplot(data = mpg) + 
@@ -160,7 +155,7 @@ ggplot(data = mpg) +
 
 However, ggplot2 can use a variety of geom objects to represent the data. Here, we might want to use bar plots, line charts, boxplots and so on. Well we can handle this issue in ggplot directly using a different geom to plot the same data. Here, instead of plotting points, we will use a smooth line. 
 
-# To display the same data as a smooth line fit through the points use geom_smooth().
+### To display the same data as a smooth line fit through the points use geom_smooth().
 ```{r}
 ggplot(data = mpg) + 
   geom_smooth(mapping = aes(x = displ, y = hwy))
@@ -170,7 +165,7 @@ ggplot(data = mpg) +
 
 So let’s recap. A geom is an object that your plot uses to represent the data. To change the geom type in your plot, simply change the geom function that you add to your plot template. Sometimes you may want to try a few things out, in which case you could use comments to help you remember what worked and what didn’t. 
 
-## Using comments (#)
+### Using comments (#)
 ```{r}
 ggplot(data = mpg) + 
 #  geom_point(mapping = aes(x = displ, y = hwy)) # points horrible 
@@ -179,20 +174,20 @@ ggplot(data = mpg) +
 
 Question: how does R work out where to plot the line??? Can use the chunk output to inform us. Can also use the help menu.
 
-# Changing linetype
+### Changing linetype
 ```{r}
 ggplot(data = mpg) + 
   geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv)) # Can also use "lty = " for the same result
 ```
 
 
-# Grouping
+### Grouping
 ```{r}
 ggplot(data = mpg) +
   geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
 ```
  
-# Change line colour based on drv value
+### Change line colour based on drv value
 ```{r}
 ggplot(data = mpg) +
   geom_smooth(
@@ -201,7 +196,7 @@ ggplot(data = mpg) +
   )
 ```
 
-# Multiple geoms
+### Multiple geoms
 We already did this one way
 ```{r}
 ggplot(data = mpg) + 
@@ -217,7 +212,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 ```
 
 
-# Can still manipulate each geom/layer separately:
+### Can still manipulate each geom/layer separately:
 ```{r}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point(mapping = aes(color = class)) + 
@@ -235,7 +230,7 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
 Question: what does the "se = FALSE" do?
 
 
-# Exercise:
+# Exercise: MAKEEEEE SURRREEE TOOOO DO IITTTTT
 1.  What geom would you use to draw a line chart? A boxplot? A histogram? An area chart?
 2.  Run this code in your head and predict what the output will look like. Then, run the code in R and check your predictions.
 
@@ -349,7 +344,7 @@ ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
 ```
 
 
-# To color the bar outlines with no fill color
+# To colour the bar outlines with no fill colour
 ```{r}
 ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) + 
   geom_bar(fill = NA, position = "identity")
@@ -379,7 +374,7 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy))
 ```
 
-# Assignment
+# Assignment: DOUBLEEEEEEE CHECCKKKKKKKK
 
 # Plot Deconstruction
 ```{r}
@@ -407,8 +402,8 @@ df_long <- bind_rows(
 
 # Create the plot
 ggplot(df_long, aes(x = Distance, y = Semivariance, color = Season)) +
-  geom_point(size = 2, alpha = 1) +  # Scatter points
-  geom_smooth(method = "loess", span = 0.5, se = FALSE) +  # Explicitly use LOESS, using non-parametric regression method used to smooth data trends in scatter plots 
+  geom_point(size = 2, alpha = 1, ) +  # Scatter points
+  geom_smooth(method = "loess", span = 0.5, se = 0) +  # Explicitly use LOESS, using non-parametric regression method used to smooth data trends in scatter plots 
   theme_minimal() +
   labs(title = "Fish species richness for rainy and dry seasons in 1993–1994",
        x = "Distance (km)",
@@ -421,13 +416,232 @@ ggplot(df_long, aes(x = Distance, y = Semivariance, color = Season)) +
 
 
 
-
 # --------@
 # Module 4 - Data in R - Workshop 2
 # Alexander Barkley
 # 20-03-2025
 # --------@
 
+# Labels
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se.e = FALSE) +
+  labs(title = "Fuel efficiency generally decreases with engine size")
+# note: "[38;5;252m`geom_smooth()` using method = 'loess' and formula = 'y ~ x'[39m" - this states that it doesnt have data for some part of thw curve therefore it just figures or estimates where it would be to make the smooth line.
+```
+# Adding subtitles and caption
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) + # "$class - unexpected character here)
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov"
+  )
+
+```
+
+# Using "labs" to replace axis titles and labels; instead of using aesthetics, we can specify what we want our x and y axes to be.
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) + # "classs" error adjusted
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type"
+  )
+```
+
+### 3.2 - Annotations
+```{r}
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_text(aes(label = model), data = best_in_class)
+```
+
+### 3.3 - Adding scales to graph
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class))
+```
+Doing this just ensures ggplot aadss scales in the background, however, scales can be specified.
+
+```{r}
+?scale_x_continuous()
+
+limits = c(0,7)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  scale_x_continuous() +
+  scale_y_continuous() +
+  scale_colour_discrete()
+```
+
+### 3.4 - Axis ticks
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_y_continuous(breaks = seq(15, 40, by = 5))
+
+```
+
+```{r}
+# seq(15, 40, by = 5 ?? 
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL) # adds the points on the axis but no labels
+```
+
+
+### 3.5 - Legends and colour schemes
+
+```{r}
+base <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class))
+
+base + theme(legend.position = "left")
+```
+
+```{r}
+base + theme(legend.position = "top")
+```
+
+```{r}
+base + theme(legend.position = "bottom")
+```
+
+```{r}
+base + theme(legend.position = "right")
+```
+
+```{r}
+base + theme(legend.position = "none")
+```
+
+### 3.6 - Replacing a scale
+
+```{r}
+ggplot(diamonds, aes(carat, price)) +
+  geom_bin2d() + 
+  scale_x_log10() + 
+  scale_y_log10()
+```
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv))
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv)) +
+  scale_colour_brewer(palette = "Set1")
+```
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv, shape = drv)) +
+  scale_colour_brewer(palette = "Set1")
+```
+
+```{r}
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, colour = party)) +
+    geom_point() +
+    geom_segment(aes(xend = end, yend = id)) +
+    scale_colour_manual(values = c(Republican = "red", Democratic = "blue"))
+```
+
+
+```{r}
+#install.packages('viridis')
+#install.packages('hexbin')
+library(viridis)
+library(hexbin)
+```
+
+```{r}
+?tibble
+
+df <- tibble( # note we're just making a fake dataset so we can plot it
+  x = rnorm(10000),
+  y = rnorm(10000)
+)
+ggplot(df, aes(x, y)) +
+  geom_hex() + # a new geom!
+  coord_fixed()
+
+ggplot(df, aes(x, y)) +
+  geom_hex() +
+  viridis::scale_fill_viridis() +
+  coord_fixed()
+
+```
+### 3.7 - Themes
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_bw()
+```
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_light()
+```
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_classic()
+```
+
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_dark()
+```
+
+### Developing your own theme
+```{r}
+theme (panel.border = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="right",
+        legend.title=element_blank(),
+        legend.text=element_text(size=8),
+        panel.grid.major = element_blank(),
+        legend.key = element_blank(),
+        legend.background = element_blank(),
+        axis.text.y=element_text(colour="black"),
+        axis.text.x=element_text(colour="black"),
+        text=element_text(family="Times New Roman"))
+```
+
+### Saving and exporting plots
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + geom_point()
+
+ggsave("my-plot.pdf")
+#> Saving 7 x 4.32 in image
+```
 
 
 
@@ -438,3 +652,11 @@ ggplot(df_long, aes(x = Distance, y = Semivariance, color = Season)) +
 
 
 
+
+
+
+# --------@
+# Module 4 - Data in R - Workshop 3
+# Alexander Barkley
+# 09-04-2025
+# --------@
