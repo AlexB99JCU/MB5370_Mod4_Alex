@@ -665,6 +665,7 @@ ggsave("my-plot.pdf")
 
 
 ### Assignment - QFISH
+
 ```{r}
 getwd()
 ```
@@ -746,38 +747,6 @@ shark_catch_long|>
   theme_bw()
 ```
 
-```{r}
-# making a table of just grand total
-area_totals <- shark_catch_long |>
-  filter(Area != "Grand Total") |>  
-  group_by(Area) |>
-  summarise(Total = sum(Nos, na.rm = TRUE)) |>
-  
-
-# View the table
-print(area_totals)
-
-
-# Summarise the data
-area_totals <- shark_catch_long |>
-  filter(Area != "Grand Total") |>  # Exclude the already-calculated grand total
-  group_by(Area) |>
-  summarise(Total = sum(Nos, na.rm = TRUE)) |>
-  arrange(desc(Total))  # Optional: order by highest catch
-
-# Plot
-ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
-  geom_bar(stat = "identity") +
-  theme_classic() +. #### use key plot too from prior workshop
-  labs(
-    title = "Total Shark Catches by Area",
-    x = "Area",
-    y = "Total Catches"
-  ) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x labels for readability
-
-
-```
 
 ```{r}
 shark_stats <- 
@@ -802,7 +771,7 @@ ggplot(data = shark_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), co
 ```{r}
 # Turtles
 turtle_catch_long <-
-  shark_catch |>
+  turtle_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos")
 
 turt_stats <- 
@@ -817,7 +786,7 @@ turt_stats
 
 # Mammals
 mammal_catch_long <-
-  shark_catch |>
+  mammal_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos")
 mammal_catch_long
 
@@ -833,7 +802,7 @@ mam_stats
 
 #Other
 other_catch_long <-
-  shark_catch |>
+  other_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos")
 other_catch_long
 
@@ -851,7 +820,7 @@ other_stats
 ```
 
 
-### Ben's code
+### Ben's example
 
 ```{r}
 shark_program <- 
@@ -860,6 +829,7 @@ shark_program <-
   clean_names() # But we want 
 head(shark_program)
 ```
+
 ```{r}
 shark_catch <- 
   shark_program |>
@@ -939,7 +909,111 @@ ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), 
     scale_shape_manual(values = c(23, 24))
 ```
 
+### Another attempt at assignment with different question and graph
+### Looking at total shark catches per area
 
+```{r}
+# making a table of just grand total
+area_totals <- shark_catch_long |>
+  filter(Area != "Grand Total") |>  
+  group_by(Area) |>
+  summarise(Total = sum(Nos, na.rm = TRUE)) |>
+  
+
+# View the table
+print(area_totals)
+
+
+# Summarise the data
+area_totals <- shark_catch_long |>
+  filter(Area != "Grand Total") |>  # Exclude the already-calculated grand total
+  group_by(Area) |>
+  summarise(Total = sum(Nos, na.rm = TRUE)) |>
+  arrange(desc(Total))  # order hghest to lowest
+
+# Plot
+ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
+  geom_bar(stat = "identity") +
+  theme_classic() + #### use key plot too from prior workshop
+  labs(
+    title = "Total Shark Catches by Area",
+    x = "Area",
+    y = "Total Catches"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+```
+
+### Looking at time series of all the taxa
+
+```{r}
+shark_stats <- 
+shark_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Sharks")
+shark_stats
+
+turtle_stats <- 
+turtle_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Turtles")
+turtle_stats
+
+mammal_stats <- 
+mammal_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Mammals")
+mammal_stats
+
+other_stats <- 
+other_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Other")
+other_stats
+
+combine_stats <- 
+  bind_rows(shark_stats, turtle_stats, mammal_stats, other_stats)
+
+
+
+ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa)) +
+  geom_line(aes(group = Taxa), colour = "black") +  # Adds black line for each Taxa
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD), colour = "black") +  # Points + SD error bars
+  scale_shape_manual(values = c(23, 24, 21, 22)) +  # Adds a third shape for another taxa if present (like "Other")
+  labs(
+    title = "Mean Annual Catches by Taxa (2000–2025)",
+    x = "Year",
+    y = "Mean Catch per Year",
+    shape = "Taxa",
+    fill = "Taxa"
+  ) +
+  theme_minimal() +  # Clean theme
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 12),
+    axis.title.y = element_text(face = "bold", size = 12),
+    legend.title = element_text(face = "bold")
+  )
+
+```
+
+look at bycatch of other taxa as effort for shark catching incereases
 
 
 
@@ -1065,3 +1139,15 @@ table2
 
 ```
 
+# --------@
+# Module 4 - Data in R - End of Workshop 3
+# Alexander Barkley
+# 09-04-2025
+# --------@
+
+
+# --------@
+# Module 4 - Data in R - Workshop 4
+# Alexander Barkley
+# 09-04-2025
+# --------@
