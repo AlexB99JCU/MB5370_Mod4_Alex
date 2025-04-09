@@ -415,6 +415,12 @@ ggplot(df_long, aes(x = Distance, y = Semivariance, color = Season)) +
 
 
 
+# --------@
+# Module 4 - Data in R -  End of Workshop 1
+# Alexander Barkley
+# 20-03-2025
+# --------@
+
 
 # --------@
 # Module 4 - Data in R - Workshop 2
@@ -654,11 +660,283 @@ ggsave("my-plot.pdf")
 
 
 
+
+
+
+
 ### Assignment - QFISH
+```{r}
+getwd()
+```
+
 
 ```{r}
-shark <- read.csv('/Users/alexanderbarkley/Downloads/Number caught by area, calendar year and species group (QFISH).csv')
-view(shark)
+library (tidyverse)
+library(janitor)
+
+
+shark <- 
+  read.csv("../data/QFISH Assigment shark dataset.csv") |>
+  row_to_names(row_number = 2, remove_rows_above = FALSE) |> 
+  clean_names()
+
+head(shark)
+#view(shark)
+as_tibble(shark)
+
+```
+
+```{r}
+shark_catch <-
+  shark |>
+  select (area | contains ("shark")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+shark_catch
+```
+
+```{r}
+turtle_catch <-
+  shark |>
+  select (area | contains ("turtle")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+turtle_catch
+```
+
+
+```{r}
+mammal_catch <-
+  shark |>
+  select (area | contains ("mammal")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+mammal_catch
+```
+
+```{r}
+other_catch <-
+  shark |>
+  select (area | contains ("other")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+other_catch
+```
+
+### Pivoting wide tables longer 
+
+```{r}
+shark_catch_long <-
+  shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+shark_catch_long
+
+shark_catch_long|>
+  filter(Area != "Grand Total") |>
+  ggplot (aes(x= Year, y = Nos, group = Area, colour = Area, fill = Area)) +
+  geom_point() + 
+  theme_bw()
+```
+
+```{r}
+# making a table of just grand total
+area_totals <- shark_catch_long |>
+  filter(Area != "Grand Total") |>  
+  group_by(Area) |>
+  summarise(Total = sum(Nos, na.rm = TRUE)) |>
+  
+
+# View the table
+print(area_totals)
+
+
+# Summarise the data
+area_totals <- shark_catch_long |>
+  filter(Area != "Grand Total") |>  # Exclude the already-calculated grand total
+  group_by(Area) |>
+  summarise(Total = sum(Nos, na.rm = TRUE)) |>
+  arrange(desc(Total))  # Optional: order by highest catch
+
+# Plot
+ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
+  geom_bar(stat = "identity") +
+  theme_classic() +. #### use key plot too from prior workshop
+  labs(
+    title = "Total Shark Catches by Area",
+    x = "Area",
+    y = "Total Catches"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x labels for readability
+
+
+```
+
+```{r}
+shark_stats <- 
+shark_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Sharks")
+
+shark_stats
+
+ggplot(data = shark_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), colour = "black") +
+  geom_line() +
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD)) +
+    scale_shape_manual(values = c(23, 24))
+
+```
+### Other data
+
+```{r}
+# Turtles
+turtle_catch_long <-
+  shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+
+turt_stats <- 
+turtle_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Turtles")
+turt_stats
+
+# Mammals
+mammal_catch_long <-
+  shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+mammal_catch_long
+
+mam_stats <- 
+mammal_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Mammals")
+mam_stats
+
+#Other
+other_catch_long <-
+  shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+other_catch_long
+
+other_stats <- 
+other_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Other")
+other_stats
+
+### REMOVE GRAND TOTALS WHEN PLOTTING - DO SEPARATE
+```
+
+
+### Ben's code
+
+```{r}
+shark_program <- 
+  read_csv("../data/QFISH Assigment shark dataset.csv") |>
+  row_to_names(row_number = 2, remove_rows_above = FALSE) |> # Variable names are meaningless, so remove
+  clean_names() # But we want 
+head(shark_program)
+```
+```{r}
+shark_catch <- 
+  shark_program |>
+  select(area | contains("shark")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+  
+turtle_catch <- 
+  shark_program |>
+  select(area | contains("turtle")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+mammal_catch <- 
+  shark_program |>
+  select(area | contains("mammal")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+other_catch <- 
+  shark_program |>
+  select(area | contains("other")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+head(shark_catch, n = 2)
+```
+
+# Pivot wide tibbles longer
+```{r}
+shark_catch_long <- 
+shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+
+turtle_catch_long <- 
+  turtle_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+
+```
+
+# Make stats tibbles
+```{r}
+shark_stats <- 
+shark_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Sharks")
+shark_stats
+
+turtle_stats <- 
+turtle_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Turtles")
+turtle_stats
+
+combine_stats <- 
+  bind_rows(shark_stats, turtle_stats)
+  
+```
+
+
+```{r}
+ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), colour = "black") +
+  geom_line() +
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD)) +
+    scale_shape_manual(values = c(23, 24))
 ```
 
 
@@ -667,8 +945,11 @@ view(shark)
 
 
 
-
-
+# --------@
+# Module 4 - Data in R - End of Workshop 2
+# Alexander Barkley
+# 20-03-2025
+# --------@
 
 # --------@
 # Module 4 - Data in R - Workshop 3
@@ -685,7 +966,7 @@ library(tidyverse)
 
 ### Exercise
 ```{r}
-For each of the sample tables, describe what each observation and each column represents.
+# For each of the sample tables, describe what each observation and each column represents.
 
 table1
 #> # A tibble: 6 × 4
