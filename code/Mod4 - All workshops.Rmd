@@ -1012,13 +1012,22 @@ ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa))
   )
 
 ```
+Sure! Here's a short descriptive paragraph for your graph:
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9693451a4236d76c5982bf87725c4ea90b61dc6e
 This graph shows the mean annual catch numbers for four taxa — Sharks, Turtles, Mammals, and Other — recorded across various areas from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking in 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years.
 
 
 
 
+<<<<<<< HEAD
 Looking at bycatch of other taxa as effort for shark catching increases ***
+=======
+look at bycatch of other taxa as effort for shark catching increases ***
+>>>>>>> 9693451a4236d76c5982bf87725c4ea90b61dc6e
 
 ```{r}
 # Summarise total catch per year for Sharks and Turtles
