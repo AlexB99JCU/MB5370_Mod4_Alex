@@ -1012,8 +1012,44 @@ ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa))
   )
 
 ```
+Sure! Here's a short descriptive paragraph for your graph:
 
-look at bycatch of other taxa as effort for shark catching incereases
+
+This graph shows the mean annual catch numbers for four taxa — Sharks, Turtles, Mammals, and Other — recorded across various areas from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking in 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years.
+
+
+
+
+look at bycatch of other taxa as effort for shark catching increases ***
+
+```{r}
+# Summarise total catch per year for Sharks and Turtles
+shark_yearly <- shark_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(SharkTotal = sum(Nos, na.rm = TRUE))
+
+turtle_yearly <- turtle_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(TurtleTotal = sum(Nos, na.rm = TRUE))
+
+# Join the two summaries by Year
+bycatch_data <- left_join(shark_yearly, turtle_yearly, by = "Year")
+
+# Plot: Shark vs Turtle catch
+ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
+  geom_point(color = "darkgreen", size = 3) +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +  # Add trendline
+  theme_minimal() +
+  labs(
+    title = "Relationship Between Shark Catch and Turtle Bycatch",
+    x = "Total Shark Catch per Year",
+    y = "Total Turtle Catch per Year"
+  )
+
+```
+The scatterplot illustrates the relationship between total shark catch and total turtle catch per year, serving as a proxy for exploring potential turtle bycatch associated with shark fishing effort. Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. This implies that turtle catch may be relatively stable across years and not directly linked to shark fishing intensity, or that other factors — such as gear type, spatial variation, or seasonal effects — may play a more significant role in influencing turtle bycatch rates.
 
 
 
@@ -1148,6 +1184,21 @@ table2
 
 # --------@
 # Module 4 - Data in R - Workshop 4
+# Alexander Barkley
+# 09-04-2025
+# --------@
+
+
+
+
+
+
+
+
+
+
+# --------@
+# Module 4 - Data in R - End of Workshop 4
 # Alexander Barkley
 # 09-04-2025
 # --------@
