@@ -329,3 +329,70 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
 
 ```
 
+### Looking at time series of all the taxa
+
+```{r}
+
+combine_stats <- 
+  bind_rows(shark_stats, turtle_stats, mammal_stats, other_stats)
+
+
+
+ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa)) +
+  geom_line(aes(group = Taxa), colour = "black") +  # Adds black line for each Taxa
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD), colour = "black") +  # Points + SD error bars
+  scale_shape_manual(values = c(23, 24, 21, 22)) +  # Adds a third shape for another taxa if present (like "Other")
+  labs(
+    title = "Mean Annual Catches by Taxa (2000–2025)",
+    x = "Year",
+    y = "Mean Catch per Year",
+    shape = "Taxa",
+    fill = "Taxa"
+  ) +
+  theme_minimal() +  # Clean theme
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 12),
+    axis.title.y = element_text(face = "bold", size = 12),
+    legend.title = element_text(face = "bold")
+  )
+
+```
+
+This graph shows the mean annual catch numbers for four taxa — Sharks, Turtles, Mammals, and Other — recorded across various areas from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking in 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years. 
+
+### Looking at bycatch of other taxa as effort for shark catching increases
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Summarise total shark catch per year
+shark_yearly <- shark_catch_long |> 
+  filter(Area != "Grand Total") |>        
+  group_by(Year) |>                         
+  summarise(SharkTotal = sum(Nos, na.rm = TRUE))
+
+# Summarise total turtle catch per year
+turtle_yearly <- turtle_catch_long |> 
+  filter(Area != "Grand Total") |> 
+  group_by(Year) |> 
+  summarise(TurtleTotal = sum(Nos, na.rm = TRUE))  # Sum turtle catches for each year
+
+# Merge the two summaries into one table using Year as the key
+bycatch_data <- left_join(shark_yearly, turtle_yearly, by = "Year")
+# Now we have one row per year, with total shark and turtle catches side by side
+
+# Plotting total turtle catch vs. shark catch per year
+ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
+  geom_point(color = "navyblue", size = 2) +               # Add points for each year
+  geom_smooth(method = "lm", se = TRUE, color = "black") + # Add linear regression line with confidence interval
+  theme_minimal() +                                        # Use clean minimal theme
+  labs(
+    title = "Relationship Between Shark Catch and Turtle Bycatch",  
+    x = "Total Shark Catch per Year",                              
+    y = "Total Turtle Catch per Year"                             
+  )
+
+```
+The scatterplot illustrates the relationship between total shark catch and total turtle catch per year, serving as a proxy for exploring potential turtle bycatch associated with shark fishing effort. Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. This implies that turtle catch may be relatively stable across years and not directly linked to shark fishing intensity, or that other factors — such as gear type, spatial variation, or seasonal effects — may play a more significant role in influencing turtle bycatch rates.
