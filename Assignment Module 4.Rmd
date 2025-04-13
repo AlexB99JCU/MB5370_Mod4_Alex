@@ -1,0 +1,331 @@
+---
+title: "Module 4 Assignment"
+author: "Alexander Barkley"
+date: "10-04-2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Uploading and viewing dataset
+
+```{r message=FALSE, warning=FALSE}
+getwd()
+
+library (tidyverse)
+library(janitor)
+
+
+shark <- 
+  read.csv("data/QFISH Assigment shark dataset.csv") |> #evaluating from root directory
+  row_to_names(row_number = 2, remove_rows_above = FALSE) |> 
+  clean_names()
+
+head(shark)
+#view(shark)
+as_tibble(shark)
+```
+
+### Extracting relevant species/taxa data from the larger dataframe - sharks
+
+```{r}
+shark_catch <-
+  shark |>
+  select (area | contains ("shark")) |> # keep "area" and all columns that contain the word "shark"
+  row_to_names(row_number = 1) |> # Move the first row of the dataset into the column names
+  rename(Area = 1) |> # Rename the first column to "Area" for clarity
+  mutate (across(-c(Area), as.numeric)) # Convert all columns except "Area" to numeric values 
+
+shark_catch
+
+```
+
+
+### Turtles 
+```{r}
+turtle_catch <-
+  shark |>
+  select (area | contains ("turtle")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+turtle_catch
+```
+
+
+### Mammals
+
+```{r}
+mammal_catch <-
+  shark |>
+  select (area | contains ("mammal")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+mammal_catch
+```
+
+
+### Other 
+
+```{r}
+other_catch <-
+  shark |>
+  select (area | contains ("other")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |> 
+  mutate (across(-c(Area), as.numeric))
+
+other_catch
+```
+
+### Pivoting wide tables longer 
+
+```{r}
+shark_catch_long <-
+  shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos") #reshape from wide to long; keeping area column as is and all other column names (previously years) become values in a new 'Year' column. Their corresponding values go into a new "Nos" (number of sharks) column
+shark_catch_long
+
+
+# Plotting the data
+shark_catch_long|>
+  filter(Area != "Grand Total") |> #excluding Grand Total points from the plot
+  ggplot (aes(x= Year, y = Nos, group = Area, colour = Area, fill = Area)) +
+  geom_point() + 
+  theme_bw()
+```
+
+```{r fig.cap="Shark catch per year", fig.height=120/25.4, fig.width=170/25.4, message=FALSE, warning=FALSE}
+
+# Summarise statistics of shark catches by year
+
+shark_stats <- 
+  shark_catch_long |>                     # Using the long-format dataset for sharks
+  filter(Area != "Grand Total") |>        # Excluding total summary
+  group_by(Year) |>                       # Grouping data by calendar year
+  summarise(
+    Mean = mean(Nos, na.rm = TRUE),       # Calculating the mean number of shark catches
+    SD = sd(Nos, na.rm = TRUE)            # Calculating the standard deviation
+  ) |> 
+  mutate(Year = as.numeric(Year)) |>      # Ensures the year is treated as numeric
+  mutate(Taxa = "Sharks")                 # Adds a new column identifying this group as "Sharks"
+
+# View
+shark_stats
+
+
+# Creating a plot of mean shark catches over time with error bars
+
+ggplot(data = shark_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa), colour = "black") +
+  geom_line() +                           # Draw a line connecting yearly mean values
+  geom_pointrange(                        # Add points with vertical error bars
+    aes(ymin = Mean - SD, ymax = Mean + SD),  # Error bars = mean ± standard deviation
+    size = 0.5                           
+  ) +
+  scale_shape_manual(values = c(23, 24))  # Set custom shapes for the points (if multiple taxa)
+theme_bw()                                 # Apply a clean black-and-white theme 
+
+## then ggsave
+```
+
+
+### Other data statistics
+
+```{r message=FALSE, warning=FALSE}
+# Converting turtle_catch from wide to long format
+
+turtle_catch_long <- 
+  turtle_catch |> 
+  pivot_longer(
+    !Area,                          # Keep 'Area' column fixed; pivot all others 
+    names_to = "Year",             # The old column names (years) go into a new column called 'Year'
+    values_to = "Nos"              # The values from the pivoted columns go into 'Nos' 
+  )
+
+# Step 2: Summarise turtle catch statistics per year
+
+turt_stats <- 
+  turtle_catch_long |> 
+  filter(Area != "Grand Total") |>  #Excluding total
+  group_by(Year) |>                 # Group the data by "Year" so we can calculate yearly stats
+  summarise(
+    Mean = mean(Nos, na.rm = TRUE), # Calculate the mean number of turtle catches for each year
+    SD = sd(Nos, na.rm = TRUE)      # Calculate the standard deviation of catches per year
+  ) |>
+  mutate(Year = as.numeric(Year)) |> 
+  mutate(Taxa = "Turtles")           
+
+# View 
+turt_stats
+
+### This same steps were taken for the following taxa categories.
+
+# Mammals
+mammal_catch_long <-
+  mammal_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+mammal_catch_long
+
+mam_stats <- 
+mammal_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Mammals")
+mam_stats
+
+#Other
+other_catch_long <-
+  other_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+other_catch_long
+
+other_stats <- 
+other_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Other")
+other_stats
+
+### REMOVE GRAND TOTALS WHEN PLOTTING - DO SEPARATE
+```
+
+### Ben's example
+
+```{r}
+shark_program <- 
+  read_csv("data/QFISH Assigment shark dataset.csv") |>
+  row_to_names(row_number = 2, remove_rows_above = FALSE) |> # Variable names are meaningless, so remove
+  clean_names() # But we want 
+head(shark_program)
+```
+
+```{r}
+shark_catch <- 
+  shark_program |>
+  select(area | contains("shark")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+  
+turtle_catch <- 
+  shark_program |>
+  select(area | contains("turtle")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+mammal_catch <- 
+  shark_program |>
+  select(area | contains("mammal")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+other_catch <- 
+  shark_program |>
+  select(area | contains("other")) |>
+  row_to_names(row_number = 1) |>
+  rename(Area = 1) |>
+  mutate(across(-c(Area), as.numeric)) 
+
+head(shark_catch, n = 2)
+```
+
+# Pivot wide tibbles longer
+
+```{r}
+shark_catch_long <- 
+shark_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+shark_catch_long
+
+turtle_catch_long <- 
+  turtle_catch |>
+  pivot_longer(!Area, names_to = "Year", values_to = "Nos")
+turtle_catch_long
+```
+
+# Make stats tibbles
+
+```{r}
+shark_stats <- 
+shark_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Sharks")
+shark_stats
+
+turtle_stats <- 
+turtle_catch_long |>
+  filter(Area != "Grand Total") |>
+  group_by(Year) |>
+  summarise(Mean = mean(Nos, na.rm = TRUE),
+            SD = sd(Nos, na.rm = TRUE)) |>
+  mutate(Year = as.numeric(Year)) |>
+  mutate(Taxa = "Turtles")
+turtle_stats
+
+combine_stats <- 
+  bind_rows(shark_stats, turtle_stats)
+
+#Plot
+ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), colour = "black") +
+  geom_line() +
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD)) +
+    scale_shape_manual(values = c(23, 24))
+```
+
+### My attempt 1
+### Another attempt at assignment with different question and graph
+### Looking at total shark catches per area
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(viridis) 
+
+# Create a summary table with total catches per area (excluding the Grand Total row)
+area_totals <- shark_catch_long |> 
+  filter(Area != "Grand Total") |>       
+  group_by(Area) |>                      # Group by location
+  summarise(Total = sum(Nos, na.rm = TRUE)) |>  # Sum all catch values for each area
+  arrange(desc(Total))                   # Arranging areas from highest to lowest catch
+
+# View the resulting summary table
+print(area_totals)
+
+# Plot total catches by area 
+ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
+  geom_bar(stat = "identity") +                      # Plot bars representing total values
+  scale_fill_viridis_d(option = "G") +              
+  theme_classic() +                                
+  labs(
+    title = "Total Shark Catches by Area",           
+    x = "Area",                                       
+    y = "Total Catches",                           
+    fill = "Area"                                    
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis labels for readability
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),  # Center and bold title
+    axis.title = element_text(face = "bold"),          # Bold axis titles
+    legend.position = "none"                           # Remove legend if labels are already on x-axis
+  )
+
+```
+
