@@ -334,7 +334,7 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
 ```{r}
 
 combine_stats <- 
-  bind_rows(shark_stats, turtle_stats, mammal_stats, other_stats)
+  bind_rows(shark_stats, turtle_stats, mam_stats, other_stats)
 
 
 
@@ -385,7 +385,7 @@ bycatch_data <- left_join(shark_yearly, turtle_yearly, by = "Year")
 
 # Plotting total turtle catch vs. shark catch per year
 ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
-  geom_point(color = "navyblue", size = 2) +               # Add points for each year
+  geom_point(color = "red", size = 2) +               # Add points for each year
   geom_smooth(method = "lm", se = TRUE, color = "black") + # Add linear regression line with confidence interval
   theme_minimal() +                                        # Use clean minimal theme
   labs(
