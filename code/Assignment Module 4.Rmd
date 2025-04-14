@@ -31,7 +31,7 @@ as_tibble(shark)
 
 ### Extracting relevant species/taxa data from the larger dataframe - sharks
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_catch <-
   shark |>
   select (area | contains ("shark")) |> # keep "area" and all columns that contain the word "shark"
@@ -45,7 +45,8 @@ shark_catch
 
 
 ### Turtles 
-```{r}
+
+```{r message=FALSE, warning=FALSE}
 turtle_catch <-
   shark |>
   select (area | contains ("turtle")) |>
@@ -59,7 +60,7 @@ turtle_catch
 
 ### Mammals
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 mammal_catch <-
   shark |>
   select (area | contains ("mammal")) |>
@@ -73,7 +74,7 @@ mammal_catch
 
 ### Other 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 other_catch <-
   shark |>
   select (area | contains ("other")) |>
@@ -86,7 +87,7 @@ other_catch
 
 ### Pivoting wide tables longer 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_catch_long <-
   shark_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos") #reshape from wide to long; keeping area column as is and all other column names (previously years) become values in a new 'Year' column. Their corresponding values go into a new "Nos" (number of sharks) column
@@ -100,6 +101,9 @@ shark_catch_long|>
   geom_point() + 
   theme_bw()
 ```
+
+
+### Attempt 1
 
 ```{r fig.cap="Shark catch per year", fig.height=120/25.4, fig.width=170/25.4, message=FALSE, warning=FALSE}
 
@@ -203,7 +207,7 @@ other_stats
 
 ### Ben's example
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_program <- 
   read_csv("../data/QFISH Assigment shark dataset.csv") |>
   row_to_names(row_number = 2, remove_rows_above = FALSE) |> # Variable names are meaningless, so remove
@@ -211,7 +215,7 @@ shark_program <-
 head(shark_program)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_catch <- 
   shark_program |>
   select(area | contains("shark")) |>
@@ -245,7 +249,7 @@ head(shark_catch, n = 2)
 
 # Pivot wide tibbles longer
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_catch_long <- 
 shark_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos")
@@ -259,7 +263,7 @@ turtle_catch_long
 
 # Make stats tibbles
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 shark_stats <- 
 shark_catch_long |>
   filter(Area != "Grand Total") |>
@@ -294,7 +298,7 @@ ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), 
 ### Another attempt at assignment with different question and graph
 ### Looking at total shark catches per area
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
 library(viridis) 
@@ -331,7 +335,7 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
 
 ### Looking at time series of all the taxa
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 combine_stats <- 
   bind_rows(shark_stats, turtle_stats, mam_stats, other_stats)
@@ -363,7 +367,7 @@ This graph shows the mean annual catch numbers for four taxa — Sharks, Turtles
 
 ### Looking at bycatch of other taxa as effort for shark catching increases
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
 
@@ -385,7 +389,7 @@ bycatch_data <- left_join(shark_yearly, turtle_yearly, by = "Year")
 
 # Plotting total turtle catch vs. shark catch per year
 ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
-  geom_point(color = "red", size = 2) +               # Add points for each year
+  geom_point(color = "red", size = 1) +               # Add points for each year
   geom_smooth(method = "lm", se = TRUE, color = "black") + # Add linear regression line with confidence interval
   theme_minimal() +                                        # Use clean minimal theme
   labs(
