@@ -483,7 +483,7 @@ ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
 
 The scatterplot illustrates the relationship between total shark catch and total turtle catch per year.Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. 
 
-### Converting dile to html to put on website
+### Converting markdown file to html to put on website
 
 
 ``` r
