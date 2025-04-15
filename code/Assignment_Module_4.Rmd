@@ -11,20 +11,14 @@ output: html_document
 ### April 10 2025
 ### -----------------@ 
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ### Uploading and viewing dataset
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 getwd()
-```
-
-```
-## [1] "/Users/alexanderbarkley/Desktop/Techniques 1 - Modules/Module 4 Workshops/Module4-workshops-git/MB5370_Mod4_Alex/code"
-```
-
-``` r
 library(dplyr)        
 library(ggplot2)       
 library(forcats)       
@@ -45,8 +39,7 @@ as_tibble(shark)
 
 ### Extracting relevant species/taxa data from the larger dataframe - sharks
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_catch <-
   shark |>
   select (area | contains ("shark")) |> # keep "area" and all columns that contain the word "shark"
@@ -55,13 +48,13 @@ shark_catch <-
   mutate (across(-c(Area), as.numeric)) # Convert all columns except "Area" to numeric values 
 
 shark_catch
+
 ```
 
 
 ### Turtles 
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 turtle_catch <-
   shark |>
   select (area | contains ("turtle")) |>
@@ -75,8 +68,7 @@ turtle_catch
 
 ### Mammals
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 mammal_catch <-
   shark |>
   select (area | contains ("mammal")) |>
@@ -90,8 +82,7 @@ mammal_catch
 
 ### Other 
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 other_catch <-
   shark |>
   select (area | contains ("other")) |>
@@ -104,8 +95,7 @@ other_catch
 
 ### Pivoting wide tables longer 
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_catch_long <-
   shark_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos") #reshape from wide to long; keeping area column as is and all other column names (previously years) become values in a new 'Year' column. Their corresponding values go into a new "Nos" (number of sharks) column
@@ -122,13 +112,11 @@ shark_catch_long |>
   labs(x = "Year", y = "Nos")          
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
-
 
 ### Attempt 1
 
+```{r fig.cap="Shark catch per year", fig.height=120/25.4, fig.width=170/25.4, message=FALSE, warning=FALSE}
 
-``` r
 # Summarise statistics of shark catches by year
 
 shark_stats <- 
@@ -153,19 +141,14 @@ ggplot(data = shark_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa), c
   geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD), size = 0.5) +  # Adds points with vertical error bars
   scale_shape_manual(values = c(23, 24)) +
   theme_minimal()  
-```
 
-![Shark catch per year](figure/unnamed-chunk-8-1.png)
-
-``` r
 ## then ggsave if you want
 ```
 
 
 ### Other data statistics
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 # Converting turtle_catch from wide to long format
 
 turtle_catch_long <- 
@@ -231,8 +214,7 @@ other_stats
 
 ### Ben's example
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_program <- 
   read_csv("../data/QFISH Assigment shark dataset.csv") |>
   row_to_names(row_number = 2, remove_rows_above = FALSE) |> # Variable names are meaningless, so remove
@@ -243,8 +225,7 @@ head(shark_program)
 
 ### Making new stats
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_catch <- 
   shark_program |>
   select(area | contains("shark")) |>
@@ -278,8 +259,7 @@ head(shark_catch, n = 2)
 
 ### Pivot wide tibbles longer
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_catch_long <- 
 shark_catch |>
   pivot_longer(!Area, names_to = "Year", values_to = "Nos")
@@ -293,8 +273,7 @@ turtle_catch_long
 
 ### Make stats tibbles
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 shark_stats <- 
 shark_catch_long |>
   filter(Area != "Grand Total") |>
@@ -325,14 +304,11 @@ ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), 
     scale_shape_manual(values = c(23, 24))
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
-
 # Assignment Plots
 
 ### Looking at total shark catches per area
 
-
-``` r
+```{r message=FALSE, warning=FALSE}
 library(viridis) 
 
 # Create a summary table with total catches per area (excluding the Grand Total row)
@@ -362,14 +338,13 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
     axis.title = element_text(face = "bold"),          # Bold axis titles
     legend.position = "none"                           # Removes legend if labels are already on x-axis
   )
-```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+```
 
 ### Looking at time series of all the taxa
 
+```{r message=FALSE, warning=FALSE}
 
-``` r
 combine_stats <- 
   bind_rows(shark_stats, turtle_stats, mam_stats, other_stats)
 
@@ -392,11 +367,7 @@ ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa))
     axis.title.y = element_text(face = "bold", size = 12),
     legend.title = element_text(face = "bold")
   )
-```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
-
-``` r
 # Looking at other ways to visualise this - boxplot
 
 sharks <- shark_catch_long |> 
@@ -440,17 +411,16 @@ ggplot(
     axis.title = element_text(face = "bold"),               # Bold axis labels
     legend.position = "none"                                # Remove legend (redundant with x-axis)
   )
+
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-2.png)
-
-For the scatterplot: 
+For the plot: 
 The graph shows the mean annual catch numbers for four taxa (Sharks, Turtles, Mammals, and Other) recorded across 13 sites from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking around 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years. The other taxa are not very visible on the graph however, as they overlap, therefore a boxplot to show the total catch for each taxa would be relevant.
 
 ### Looking at bycatch of other taxa as effort for shark catching increases
 
+```{r message=FALSE, warning=FALSE}
 
-``` r
 # Summarise total shark catch per year
 shark_yearly <- shark_catch_long |> 
   filter(Area != "Grand Total") |>        
@@ -479,35 +449,4 @@ ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
   )
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
-
 The scatterplot illustrates the relationship between total shark catch and total turtle catch per year.Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. 
-
-### Converting markdown file to html to put on website
-
-
-``` r
-library(knitr)
-library(markdown)
-
-getwd()
-```
-
-```
-## [1] "/Users/alexanderbarkley/Desktop/Techniques 1 - Modules/Module 4 Workshops/Module4-workshops-git/MB5370_Mod4_Alex/code"
-```
-
-``` r
-knit("Assignment Module 4.Rmd") # produces a markdown (.md) file in your folder.
-```
-
-```
-## Error in parse_block(g[-1], g[1], params.src, markdown_mode): Duplicate chunk label 'setup', which has been used for the chunk:
-## knitr::opts_chunk$set(echo = TRUE)
-```
-
-``` r
-markdownToHTML("Assignment Module 4.md",
-"Assignment Moduoe 4.html", fragment.only=TRUE)
-```
-
