@@ -4,7 +4,12 @@ author: "Alexander Barkley"
 date: "10-04-2025"
 output: html_document
 ---
-
+### -----------------@
+### MB5370 - Workshop Assignment
+### Module 04 - Data Science in R
+### Alex Barkley
+### April 10 2025
+### -----------------@ 
 
 
 
@@ -20,6 +25,10 @@ getwd()
 ```
 
 ``` r
+library(dplyr)        
+library(ggplot2)       
+library(forcats)       
+library(RColorBrewer)  
 library (tidyverse)
 library(janitor)
 
@@ -104,11 +113,13 @@ shark_catch_long
 
 
 # Plotting the data
-shark_catch_long|>
-  filter(Area != "Grand Total") |> #excluding Grand Total points from the plot
-  ggplot (aes(x= Year, y = Nos, group = Area, colour = Area, fill = Area)) +
-  geom_point() + 
-  theme_bw()
+shark_catch_long |> 
+  filter(Area != "Grand Total") |>
+  mutate(Year = as.numeric(Year)) |>        # change "Year" to numeric
+  ggplot(aes(x = Year, y = Nos, group = Area, colour = Area, fill = Area)) +
+  geom_point() +
+  theme_bw() +
+  labs(x = "Year", y = "Nos")          
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
@@ -138,330 +149,16 @@ shark_stats
 # Creating a plot of mean shark catches over time with error bars
 
 ggplot(data = shark_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa), colour = "black") +
-  geom_line() +                           # Draw a line connecting yearly mean values
-  geom_pointrange(                        # Add points with vertical error bars
-    aes(ymin = Mean - SD, ymax = Mean + SD),  # Error bars = mean ± standard deviation
-    size = 0.5                           
-  ) +
-  scale_shape_manual(values = c(23, 24))  # Set custom shapes for the points (if multiple taxa)
+  geom_line() +                                                           # Draws a line connecting yearly mean values
+  geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD), size = 0.5) +  # Adds points with vertical error bars
+  scale_shape_manual(values = c(23, 24)) +
+  theme_minimal()  
 ```
 
 ![Shark catch per year](figure/unnamed-chunk-8-1.png)
 
 ``` r
-theme_bw()                                 # Apply a clean black-and-white theme 
-```
-
-```
-## List of 136
-##  $ line                            :List of 6
-##   ..$ colour       : chr "black"
-##   ..$ linewidth    : num 0.5
-##   ..$ linetype     : num 1
-##   ..$ lineend      : chr "butt"
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
-##  $ rect                            :List of 5
-##   ..$ fill         : chr "white"
-##   ..$ colour       : chr "black"
-##   ..$ linewidth    : num 0.5
-##   ..$ linetype     : num 1
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-##  $ text                            :List of 11
-##   ..$ family       : chr ""
-##   ..$ face         : chr "plain"
-##   ..$ colour       : chr "black"
-##   ..$ size         : num 11
-##   ..$ hjust        : num 0.5
-##   ..$ vjust        : num 0.5
-##   ..$ angle        : num 0
-##   ..$ lineheight   : num 0.9
-##   ..$ margin       : 'margin' num [1:4] 0points 0points 0points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ title                           : NULL
-##  $ aspect.ratio                    : NULL
-##  $ axis.title                      : NULL
-##  $ axis.title.x                    :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 2.75points 0points 0points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.title.x.top                :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 0
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 0points 2.75points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.title.x.bottom             : NULL
-##  $ axis.title.y                    :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : num 90
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 2.75points 0points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.title.y.left               : NULL
-##  $ axis.title.y.right              :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : num -90
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.75points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text                       :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : chr "grey30"
-##   ..$ size         : 'rel' num 0.8
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text.x                     :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 1
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 2.2points 0points 0points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text.x.top                 :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : NULL
-##   ..$ vjust        : num 0
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 0points 2.2points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text.x.bottom              : NULL
-##  $ axis.text.y                     :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 1
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 0points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text.y.left                : NULL
-##  $ axis.text.y.right               :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 0points 0points 2.2points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.text.theta                 : NULL
-##  $ axis.text.r                     :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0.5
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : 'margin' num [1:4] 0points 2.2points 0points 2.2points
-##   .. ..- attr(*, "unit")= int 8
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ axis.ticks                      :List of 6
-##   ..$ colour       : chr "grey20"
-##   ..$ linewidth    : NULL
-##   ..$ linetype     : NULL
-##   ..$ lineend      : NULL
-##   ..$ arrow        : logi FALSE
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_line" "element"
-##  $ axis.ticks.x                    : NULL
-##  $ axis.ticks.x.top                : NULL
-##  $ axis.ticks.x.bottom             : NULL
-##  $ axis.ticks.y                    : NULL
-##  $ axis.ticks.y.left               : NULL
-##  $ axis.ticks.y.right              : NULL
-##  $ axis.ticks.theta                : NULL
-##  $ axis.ticks.r                    : NULL
-##  $ axis.minor.ticks.x.top          : NULL
-##  $ axis.minor.ticks.x.bottom       : NULL
-##  $ axis.minor.ticks.y.left         : NULL
-##  $ axis.minor.ticks.y.right        : NULL
-##  $ axis.minor.ticks.theta          : NULL
-##  $ axis.minor.ticks.r              : NULL
-##  $ axis.ticks.length               : 'simpleUnit' num 2.75points
-##   ..- attr(*, "unit")= int 8
-##  $ axis.ticks.length.x             : NULL
-##  $ axis.ticks.length.x.top         : NULL
-##  $ axis.ticks.length.x.bottom      : NULL
-##  $ axis.ticks.length.y             : NULL
-##  $ axis.ticks.length.y.left        : NULL
-##  $ axis.ticks.length.y.right       : NULL
-##  $ axis.ticks.length.theta         : NULL
-##  $ axis.ticks.length.r             : NULL
-##  $ axis.minor.ticks.length         : 'rel' num 0.75
-##  $ axis.minor.ticks.length.x       : NULL
-##  $ axis.minor.ticks.length.x.top   : NULL
-##  $ axis.minor.ticks.length.x.bottom: NULL
-##  $ axis.minor.ticks.length.y       : NULL
-##  $ axis.minor.ticks.length.y.left  : NULL
-##  $ axis.minor.ticks.length.y.right : NULL
-##  $ axis.minor.ticks.length.theta   : NULL
-##  $ axis.minor.ticks.length.r       : NULL
-##  $ axis.line                       : list()
-##   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-##  $ axis.line.x                     : NULL
-##  $ axis.line.x.top                 : NULL
-##  $ axis.line.x.bottom              : NULL
-##  $ axis.line.y                     : NULL
-##  $ axis.line.y.left                : NULL
-##  $ axis.line.y.right               : NULL
-##  $ axis.line.theta                 : NULL
-##  $ axis.line.r                     : NULL
-##  $ legend.background               :List of 5
-##   ..$ fill         : NULL
-##   ..$ colour       : logi NA
-##   ..$ linewidth    : NULL
-##   ..$ linetype     : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_rect" "element"
-##  $ legend.margin                   : 'margin' num [1:4] 5.5points 5.5points 5.5points 5.5points
-##   ..- attr(*, "unit")= int 8
-##  $ legend.spacing                  : 'simpleUnit' num 11points
-##   ..- attr(*, "unit")= int 8
-##  $ legend.spacing.x                : NULL
-##  $ legend.spacing.y                : NULL
-##  $ legend.key                      : NULL
-##  $ legend.key.size                 : 'simpleUnit' num 1.2lines
-##   ..- attr(*, "unit")= int 3
-##  $ legend.key.height               : NULL
-##  $ legend.key.width                : NULL
-##  $ legend.key.spacing              : 'simpleUnit' num 5.5points
-##   ..- attr(*, "unit")= int 8
-##  $ legend.key.spacing.x            : NULL
-##  $ legend.key.spacing.y            : NULL
-##  $ legend.frame                    : NULL
-##  $ legend.ticks                    : NULL
-##  $ legend.ticks.length             : 'rel' num 0.2
-##  $ legend.axis.line                : NULL
-##  $ legend.text                     :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : 'rel' num 0.8
-##   ..$ hjust        : NULL
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ legend.text.position            : NULL
-##  $ legend.title                    :List of 11
-##   ..$ family       : NULL
-##   ..$ face         : NULL
-##   ..$ colour       : NULL
-##   ..$ size         : NULL
-##   ..$ hjust        : num 0
-##   ..$ vjust        : NULL
-##   ..$ angle        : NULL
-##   ..$ lineheight   : NULL
-##   ..$ margin       : NULL
-##   ..$ debug        : NULL
-##   ..$ inherit.blank: logi TRUE
-##   ..- attr(*, "class")= chr [1:2] "element_text" "element"
-##  $ legend.title.position           : NULL
-##  $ legend.position                 : chr "right"
-##  $ legend.position.inside          : NULL
-##  $ legend.direction                : NULL
-##  $ legend.byrow                    : NULL
-##  $ legend.justification            : chr "center"
-##  $ legend.justification.top        : NULL
-##  $ legend.justification.bottom     : NULL
-##  $ legend.justification.left       : NULL
-##  $ legend.justification.right      : NULL
-##  $ legend.justification.inside     : NULL
-##  $ legend.location                 : NULL
-##  $ legend.box                      : NULL
-##  $ legend.box.just                 : NULL
-##  $ legend.box.margin               : 'margin' num [1:4] 0cm 0cm 0cm 0cm
-##   ..- attr(*, "unit")= int 1
-##  $ legend.box.background           : list()
-##   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-##  $ legend.box.spacing              : 'simpleUnit' num 11points
-##   ..- attr(*, "unit")= int 8
-##   [list output truncated]
-##  - attr(*, "class")= chr [1:2] "theme" "gg"
-##  - attr(*, "complete")= logi TRUE
-##  - attr(*, "validate")= logi TRUE
-```
-
-``` r
-## then ggsave
+## then ggsave if you want
 ```
 
 
@@ -544,6 +241,9 @@ head(shark_program)
 ```
 
 
+### Making new stats
+
+
 ``` r
 shark_catch <- 
   shark_program |>
@@ -576,7 +276,7 @@ other_catch <-
 head(shark_catch, n = 2)
 ```
 
-# Pivot wide tibbles longer
+### Pivot wide tibbles longer
 
 
 ``` r
@@ -591,7 +291,7 @@ turtle_catch_long <-
 turtle_catch_long
 ```
 
-# Make stats tibbles
+### Make stats tibbles
 
 
 ``` r
@@ -627,14 +327,12 @@ ggplot(data = combine_stats, aes(x =Year, y = Mean, fill = Taxa, shape = Taxa), 
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
-### My attempt 1
-### Another attempt at assignment with different question and graph
+# Assignment Plots
+
 ### Looking at total shark catches per area
 
 
 ``` r
-library(dplyr)
-library(ggplot2)
 library(viridis) 
 
 # Create a summary table with total catches per area (excluding the Grand Total row)
@@ -662,7 +360,7 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
     axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis labels for readability
     plot.title = element_text(face = "bold", hjust = 0.5, size = 14),  # Center and bold title
     axis.title = element_text(face = "bold"),          # Bold axis titles
-    legend.position = "none"                           # Remove legend if labels are already on x-axis
+    legend.position = "none"                           # Removes legend if labels are already on x-axis
   )
 ```
 
@@ -675,8 +373,7 @@ ggplot(area_totals, aes(x = reorder(Area, -Total), y = Total, fill = Area)) +
 combine_stats <- 
   bind_rows(shark_stats, turtle_stats, mam_stats, other_stats)
 
-
-
+# Creating time series scatterplot of mean catches by taxa for all years
 ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa)) +
   geom_line(aes(group = Taxa), colour = "black") +  # Adds black line for each Taxa
   geom_pointrange(aes(ymin = Mean - SD, ymax = Mean + SD), colour = "black") +  # Points + SD error bars
@@ -699,15 +396,61 @@ ggplot(data = combine_stats, aes(x = Year, y = Mean, fill = Taxa, shape = Taxa))
 
 ![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
 
-This graph shows the mean annual catch numbers for four taxa — Sharks, Turtles, Mammals, and Other — recorded across various areas from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking in 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years. 
+``` r
+# Looking at other ways to visualise this - boxplot
+
+sharks <- shark_catch_long |> 
+  filter(Area != "Grand Total") |>          
+  mutate(Taxa = "Sharks")                  
+
+turtles <- turtle_catch_long |> 
+  filter(Area != "Grand Total") |> 
+  mutate(Taxa = "Turtles")
+
+mammals <- mammal_catch_long |> 
+  filter(Area != "Grand Total") |> 
+  mutate(Taxa = "Mammals")
+
+others <- other_catch_long |> 
+  filter(Area != "Grand Total") |> 
+  mutate(Taxa = "Other")
+
+# Combine all taxa datasets into one dataframe
+catch_all <- bind_rows(sharks, turtles, mammals, others)
+
+# Create a boxplot
+ggplot(
+  data = catch_all, 
+  aes(
+    x = fct_reorder(Taxa, Nos, .fun = median),  # Reorder taxa by median catch for visual clarity
+    y = Nos, 
+    fill = Taxa
+  )
+) +
+  geom_boxplot() +                           
+  theme_minimal() +                          
+  labs(
+    title = "Distribution of Catch Numbers by Taxa",  
+    x = "Taxa",                                        
+    y = "Catch Numbers"                                
+  ) +
+  scale_fill_brewer(palette = "Set2") +       
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Center and bold title
+    axis.title = element_text(face = "bold"),               # Bold axis labels
+    legend.position = "none"                                # Remove legend (redundant with x-axis)
+  )
+```
+
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-2.png)
+
+For the scatterplot: 
+The graph shows the mean annual catch numbers for four taxa (Sharks, Turtles, Mammals, and Other) recorded across 13 sites from 2000 to 2025. Sharks consistently had the highest mean catch rates, with a notable increase after 2020, peaking around 2024. In contrast, the other groups (Turtles, Mammals, and Other) maintained relatively low and stable catch rates over the years. Error bars represent standard deviation, indicating year-to-year variability. The consistently low means and narrow error bars for non-shark taxa suggest limited changes in catch trends, while the increasing trend and wider variation in shark catches may reflect shifts in fishing effort, population dynamics, or reporting practices in recent years. The other taxa are not very visible on the graph however, as they overlap, therefore a boxplot to show the total catch for each taxa would be relevant.
 
 ### Looking at bycatch of other taxa as effort for shark catching increases
 
 
 ``` r
-library(dplyr)
-library(ggplot2)
-
 # Summarise total shark catch per year
 shark_yearly <- shark_catch_long |> 
   filter(Area != "Grand Total") |>        
@@ -726,7 +469,7 @@ bycatch_data <- left_join(shark_yearly, turtle_yearly, by = "Year")
 
 # Plotting total turtle catch vs. shark catch per year
 ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
-  geom_point(color = "red", size = 1) +               # Add points for each year
+  geom_point(color = "red", size = 1.5) +               # Add points for each year
   geom_smooth(method = "lm", se = TRUE, color = "black") + # Add linear regression line with confidence interval
   theme_minimal() +                                        # Use clean minimal theme
   labs(
@@ -737,4 +480,34 @@ ggplot(bycatch_data, aes(x = SharkTotal, y = TurtleTotal)) +
 ```
 
 ![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
-The scatterplot illustrates the relationship between total shark catch and total turtle catch per year, serving as a proxy for exploring potential turtle bycatch associated with shark fishing effort. Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. This implies that turtle catch may be relatively stable across years and not directly linked to shark fishing intensity, or that other factors — such as gear type, spatial variation, or seasonal effects — may play a more significant role in influencing turtle bycatch rates.
+
+The scatterplot illustrates the relationship between total shark catch and total turtle catch per year.Each point represents a single year, and the trendline indicates a very slight negative relationship between the two variables. However, the broad confidence interval suggests high variability and low statistical confidence in this trend. Overall, there is no strong evidence to suggest that increases in shark catch lead to increases in turtle bycatch. 
+
+### Converting dile to html to put on website
+
+
+``` r
+library(knitr)
+library(markdown)
+
+getwd()
+```
+
+```
+## [1] "/Users/alexanderbarkley/Desktop/Techniques 1 - Modules/Module 4 Workshops/Module4-workshops-git/MB5370_Mod4_Alex/code"
+```
+
+``` r
+knit("Assignment Module 4.Rmd") # produces a markdown (.md) file in your folder.
+```
+
+```
+## Error in parse_block(g[-1], g[1], params.src, markdown_mode): Duplicate chunk label 'setup', which has been used for the chunk:
+## knitr::opts_chunk$set(echo = TRUE)
+```
+
+``` r
+markdownToHTML("Assignment Module 4.md",
+"Assignment Moduoe 4.html", fragment.only=TRUE)
+```
+
